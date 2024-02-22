@@ -1,44 +1,51 @@
 import { Request, Response } from "express";
+import { ACCESS_TOKEN, TMDB_URI } from "../config";
+import axios from "axios";
 
-const TMDB_URI = "";
-
+const API = {
+  search: TMDB_URI + "/search/tv?query=",
+  logo: TMDB_URI + "/tv",
+};
 class TmdbController {
-  API = {
-    search: TMDB_URI + "/search/tv?query=",
-    logo: TMDB_URI + "/tv",
-  };
-
   async getTMDBLogo(id: number) {
-    const res = await fetch(`images`, {
+    const { data } = await axios.get(`${API.logo}/${id}/images`, {
       headers: {
-        Authorization: `Bearer 4eab1c048a2e2e8a282f2b01dcecc3e8`,
+        Authorization: `Bearer ${ACCESS_TOKEN}`,
         accept: "application/json",
       },
     });
-    console.log(res);
-    const infoData = await res.json();
+
+    const infoData = data;
     return infoData;
   }
 
   async getMovie(req: Request, res: Response) {
-    const searchParams = req.query;
-    const response = await fetch(this.API.search + searchParams, {
-      headers: {
-        Authorization: `Bearer ${process.env.TMDB_ACCESS_KEY}`,
-        accept: "application/json",
-      },
-    });
+    try {
+      const { query } = req.query;
+      console.log(query);
+      console.log(API.search + query);
+      const response = await fetch(API.search + query, {
+        headers: {
+          Authorization: `Bearer ${process.env.TMDB_ACCESS_KEY}`,
+          accept: "application/json",
+        },
+      });
+      let infoData: any = await response.json();
+      infoData.results = infoData.results.filter(
+        (data: any) => data.original_language === "ja"
+      );
 
-    let infoData: any = await response.json();
-    infoData.results = infoData.results.filter(
-      (data: any) => data.original_language === "ja"
-    );
+      if (infoData.results.length <= 0)
+        return res
+          .status(404)
+          .json({ message: "Empty", result: { logos: [] } });
 
-    if (infoData.results.length <= 0)
-      return res.status(404).json({ message: "Empty", result: { logos: [] } });
-
-    const result = await this.getTMDBLogo(infoData.results[0].id);
-    return res.status(200).json({ result });
+      const result = await this.getTMDBLogo(infoData.results[0].id);
+      return res.status(200).json({ result });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ message: "Internal Server Error" });
+    }
   }
 }
 

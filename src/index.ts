@@ -2,12 +2,16 @@ import express, { Express, Request, Response } from "express";
 import dotenv from "dotenv";
 import morgan from "morgan";
 import axios from "axios";
-
-dotenv.config();
+import tmdb from "./controllers/tmdb";
 
 const app: Express = express();
 const port = process.env.PORT || 3000;
+
+dotenv.config();
+app.use(express.json());
 app.use(morgan("dev"));
+
+app.get("/tmdb", tmdb.getMovie);
 
 app.get("/", async (req: Request, res: Response) => {
   try {
