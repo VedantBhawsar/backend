@@ -15,7 +15,7 @@ app.get("/", async (req: Request, res: Response) => {
       "https://api.themoviedb.org/3/movie/changes?page=1",
       {
         headers: {
-          Authorization: `Bearer 4eab1c048a2e2e8a282f2b01dcecc3e8`,
+          Authorization: `Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI0ZWFiMWMwNDhhMmUyZThhMjgyZjJiMDFkY2VjYzNlOCIsInN1YiI6IjY1ZDI1ZDFlNjY3NTFkMDE2MzMxYWYyYSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.4FFeWJ7lxhs2z0tv0MvHkNChf1Ug-mPfr6-AtJ4IWm0`,
           accept: "application/json",
         },
       }
