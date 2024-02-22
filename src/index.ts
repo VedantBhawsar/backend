@@ -10,18 +10,22 @@ const port = process.env.PORT || 3000;
 app.use(morgan("dev"));
 
 app.get("/", async (req: Request, res: Response) => {
-  const response = await axios.get(
-    "https://api.themoviedb.org/3/movie/changes?page=1",
-    {
-      headers: {
-        Authorization: `Bearer 4eab1c048a2e2e8a282f2b01dcecc3e8`,
-        accept: "application/json",
-      },
-    }
-  );
-  console.log(response.data);
+  try {
+    const response = await axios.get(
+      "https://api.themoviedb.org/3/movie/changes?page=1",
+      {
+        headers: {
+          Authorization: `Bearer 4eab1c048a2e2e8a282f2b01dcecc3e8`,
+          accept: "application/json",
+        },
+      }
+    );
+    console.log(response.data);
 
-  res.send("server is running...");
+    res.send("server is running...");
+  } catch (error: any) {
+    res.status(500).json({ message: error.message });
+  }
 });
 
 app.listen(port, () => {
