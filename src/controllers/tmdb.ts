@@ -26,7 +26,7 @@ class TmdbController {
       console.log(API.search + query);
       const {data} = await axios.get(API.search + query, {
         headers: {
-          Authorization: `Bearer ${process.env.TMDB_ACCESS_KEY}`,
+          Authorization: `Bearer ${ACCESS_TOKEN}`,
           accept: "application/json",
         },
       });
