@@ -24,13 +24,13 @@ class TmdbController {
       const { query } = req.query;
       console.log(query);
       console.log(API.search + query);
-      const response = await fetch(API.search + query, {
+      const {data} = await axios.get(API.search + query, {
         headers: {
           Authorization: `Bearer ${process.env.TMDB_ACCESS_KEY}`,
           accept: "application/json",
         },
       });
-      let infoData: any = await response.json();
+      let infoData: any = data
       infoData.results = infoData.results.filter(
         (data: any) => data.original_language === "ja"
       );
