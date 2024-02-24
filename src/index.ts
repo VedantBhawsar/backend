@@ -2,33 +2,35 @@ import express, { Express, Request, Response } from "express";
 import dotenv from "dotenv";
 import morgan from "morgan";
 import axios from "axios";
-import tmdb from "./controllers/tmdb";
-
+import { getMovie } from "./controllers/tmdb";
+import { animeRoute } from "./routes/animeRoutes";
+import { NewsRoute } from "./routes/newsRoutes";
+import { TMDB_URI } from "./config";
+import { error } from "console";
+import cors from "cors";
 const app: Express = express();
 const port = process.env.PORT || 3000;
 
 dotenv.config();
 app.use(express.json());
 app.use(morgan("dev"));
+app.use(cors());
 
-app.get("/tmdb", tmdb.getMovie);
+app.get("/tmdb", getMovie);
+app.use("/anime", animeRoute);
+app.use("/news", NewsRoute);
 
 app.get("/", async (req: Request, res: Response) => {
   try {
-    const response = await axios.get(
-      "https://api.themoviedb.org/3/movie/changes?page=1",
-      {
-        headers: {
-          Authorization: `Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI0ZWFiMWMwNDhhMmUyZThhMjgyZjJiMDFkY2VjYzNlOCIsInN1YiI6IjY1ZDI1ZDFlNjY3NTFkMDE2MzMxYWYyYSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.4FFeWJ7lxhs2z0tv0MvHkNChf1Ug-mPfr6-AtJ4IWm0`,
-          accept: "application/json",
-        },
-      }
-    );
-    console.log(response.data);
-
-    res.send("server is running...");
+    await axios.get("https://api.themoviedb.org/3/movie/changes?page=1", {
+      headers: {
+        Authorization: `Bearer ${TMDB_URI}`,
+        accept: "application/json",
+      },
+    });
+    return res.status(200).json("server is running");
   } catch (error: any) {
-    res.status(500).json({ message: error.message });
+    return res.status(500).json("server is down please connect proxy");
   }
 });
 
