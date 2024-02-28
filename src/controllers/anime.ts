@@ -87,7 +87,6 @@ class AnimeController {
   async fetchServers(req: Request, res: Response) {
     try {
       const { id } = req.params;
-      console.log(id);
       const servers = await gogo.fetchEpisodeServers(id);
       return res.status(200).json(servers);
     } catch (error: any) {

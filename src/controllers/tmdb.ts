@@ -22,26 +22,23 @@ async function getTMDBLogo(id: number) {
 async function getMovie(req: Request, res: Response) {
   try {
     const { query } = req.query;
-    const { data } = await axios.get(API.search + query, {
-      headers: {
-        Authorization: `Bearer ${ACCESS_TOKEN}`,
-        accept: "application/json",
-      },
-    });
-    let infoData: any = data;
-    infoData.results = infoData.results.filter(
-      (data: any) => data.original_language === "ja"
+    const { data } = await axios.get(
+      "https://imdb-api.projects.thetuhin.com/search?query=" + query
     );
-
-    if (infoData.results.length <= 0)
-      return res.status(404).json({ message: "Empty", result: { logos: [] } });
-
-    console.log(infoData.results[0]);
-    const result = await getTMDBLogo(infoData.results[0].id);
-    return res.status(200).json({ result });
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: "Internal Server Error" });
+    if (!data.results[0]) {
+      return new Error("Empty");
+    }
+    const detailData = await axios.get(
+      "https://imdb-api.projects.thetuhin.com/title/" + data?.results[0]?.id
+    );
+    if (!detailData) {
+      return new Error("No data found");
+    }
+    return res.status(200).json({ message: "result", data: detailData.data });
+  } catch (error: any) {
+    return res
+      .status(500)
+      .json({ message: "Internal Server Error", error: error.message });
   }
 }
 
