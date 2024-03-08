@@ -1,7 +1,10 @@
 import { ANIME } from "@consumet/extensions";
+import Zoro from "@consumet/extensions/dist/providers/anime/zoro";
 import { Request, Response } from "express";
 
 const gogo = new ANIME.Gogoanime();
+const zoro = new ANIME.Zoro();
+const Anify = new ANIME.Anify();
 
 class AnimeController {
   async fetchSources(req: Request, res: Response) {
@@ -51,8 +54,13 @@ class AnimeController {
 
   async fetchRecent(req: Request, res: Response) {
     try {
-      const recent = await gogo.fetchRecentEpisodes();
-      return res.status(200).json(recent.results);
+      let response: any = await gogo.fetchRecentEpisodes();
+      if (response.results.length === 0) {
+        response = await zoro
+          .fetchRecentlyAdded()
+          .catch((err) => console.log(err));
+      }
+      return res.status(200).json(response.results);
     } catch (error) {
       console.error("Error fetching recent episodes:", error);
       return res
@@ -63,8 +71,13 @@ class AnimeController {
 
   async fetchPopular(req: Request, res: Response) {
     try {
-      const popular = await gogo.fetchTopAiring();
-      return res.status(200).json(popular.results);
+      let response: any = await gogo.fetchTopAiring();
+      if (response.results.length === 0) {
+        response = await zoro
+          .fetchRecentlyUpdated()
+          .catch((err) => console.log(err));
+      }
+      return res.status(200).json(response);
     } catch (error) {
       console.error("Error fetching popular episodes:", error);
       return res
@@ -76,7 +89,13 @@ class AnimeController {
   async search(req: Request, res: Response) {
     try {
       const { s } = req.query as { s: string };
-      const search = await gogo.search(s);
+      let search: any = await gogo.search(s);
+      if (search.results.length === 0) {
+        search = await zoro.search(s).catch((err) => console.log(err));
+      }
+      if (search.results.length === 0) {
+        search = await Anify.search(s).catch((err) => console.log(err));
+      }
       return res.status(200).json(search.results);
     } catch (error) {
       console.error("Failed to search anime:", error);
