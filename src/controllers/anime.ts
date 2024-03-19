@@ -77,7 +77,7 @@ class AnimeController {
           .fetchRecentlyUpdated()
           .catch((err) => console.log(err));
       }
-      return res.status(200).json(response);
+      return res.status(200).json(response.results);
     } catch (error) {
       console.error("Error fetching popular episodes:", error);
       return res
