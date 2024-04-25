@@ -9,6 +9,9 @@ import cors from "cors";
 import cluster from "cluster";
 import os from "os";
 import morgan from "morgan";
+import { PrismaClient } from "@prisma/client";
+
+const prisma = new PrismaClient();
 dotenv.config();
 
 const cpus = os.cpus().length;
@@ -61,5 +64,5 @@ app.get("/", (req: Request, res: Response) => {
 // }
 
 app.listen(port, () => {
-  console.log(`Worker ${process.pid} started!`);
+  console.log(`Server is running at started!`);
 });
