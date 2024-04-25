@@ -9,9 +9,12 @@ import cors from "cors";
 import cluster from "cluster";
 import os from "os";
 import morgan from "morgan";
-import { PrismaClient } from "@prisma/client";
+// import { PrismaClient } from "@prisma/client";
+import { Worker } from "worker_threads";
 
-const prisma = new PrismaClient();
+
+
+// const prisma = new PrismaClient();
 dotenv.config();
 
 const cpus = os.cpus().length;
@@ -41,6 +44,9 @@ app.get("/check-tmdb", async (req: Request, res: Response) => {
 app.get("/", (req: Request, res: Response) => {
   res.status(200).json({ message: `Hello World ${cluster.worker?.id}` });
 });
+
+
+
 
 // if (cluster.isPrimary) {
 //   console.log(`Primary ${process.pid} is running`);
