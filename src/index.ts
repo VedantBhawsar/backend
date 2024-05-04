@@ -1,7 +1,7 @@
 import express, { Express, Request, Response } from 'express';
 import dotenv from 'dotenv';
 import axios from 'axios';
-import { getMovie } from './controllers/tmdb';
+// import { getMovie } from './controllers/tmdb';
 import { animeRoute } from './routes/animeRoutes';
 import { NewsRoute } from './routes/newsRoutes';
 import { TMDB_URI } from './config';
@@ -21,7 +21,7 @@ const app: Express = express();
 app.use(express.json());
 app.use(morgan('dev'));
 app.use(cors());
-app.get('/tmdb', getMovie);
+// app.get('/tmdb', getMovie);
 app.use('/anime', animeRoute);
 app.use('/news', NewsRoute);
 
@@ -69,6 +69,15 @@ setInterval(async () => {
   console.log('pinged');
 }, 60 * 1000);
 
-app.listen(port, () => {
-  console.log(`Server is running at started!`);
+app.listen(3001, () => {
+  console.log(`Server is running at 3001!`);
+});
+app.listen(3002, () => {
+  console.log(`Server is running at 3002!`);
+});
+app.listen(3003, () => {
+  console.log(`Server is running at 3003!`);
+});
+app.listen(3004, () => {
+  console.log(`Server is running at 3004!`);
 });
