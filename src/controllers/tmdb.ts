@@ -25,6 +25,7 @@ async function getMovie(req: Request, res: Response) {
     const { data } = await axios.get(
       "https://imdb-api.projects.thetuhin.com/search?query=" + query
     );
+    console.log('hello')
     if (!data.results[0]) {
       return new Error("Empty");
     }
