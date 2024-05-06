@@ -9,10 +9,10 @@ import cors from 'cors';
 import cluster from 'cluster';
 import os from 'os';
 import morgan from 'morgan';
-// import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 import { Worker } from 'worker_threads';
 
-// const prisma = new PrismaClient();
+export const prismaClient = new PrismaClient();
 dotenv.config();
 
 const cpus = os.cpus().length;
@@ -67,7 +67,7 @@ app.get('/', (req: Request, res: Response) => {
 setInterval(async () => {
   await axios.get('https://backend1-dv9d.onrender.com/');
   console.log('pinged');
-}, 60 * 1000);
+}, 20000);
 
 app.listen(3001, () => {
   console.log(`Server is running at 3001!`);
