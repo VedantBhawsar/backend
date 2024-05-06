@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "Episode" ALTER COLUMN "url" DROP NOT NULL,
+ALTER COLUMN "number" DROP NOT NULL;

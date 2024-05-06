@@ -1,10 +1,17 @@
-import { ANIME } from "@consumet/extensions";
-import Zoro from "@consumet/extensions/dist/providers/anime/zoro";
-import { Request, Response } from "express";
+import { ANIME } from '@consumet/extensions';
+import Zoro from '@consumet/extensions/dist/providers/anime/zoro';
+import { Request, Response } from 'express';
+import { prismaClient } from '..';
 
 const gogo = new ANIME.Gogoanime();
 const zoro = new ANIME.Zoro();
 const Anify = new ANIME.Anify();
+
+interface Episode {
+  id: string;
+  number: number;
+  url: string;
+}
 
 class AnimeController {
   async fetchSources(req: Request, res: Response) {
@@ -18,27 +25,73 @@ class AnimeController {
       if (episode) {
         res
           .status(200)
-          .json({ message: "Sources fetched successfully", episode });
+          .json({ message: 'Sources fetched successfully', episode });
         return;
       }
       res
         .status(404)
-        .json({ message: "error while fetching successfully", episode });
+        .json({ message: 'error while fetching successfully', episode });
       return;
     } catch (error) {
-      console.error("Error fetching sources:", error);
-      res.status(500).json({ message: "Failed to fetch sources" });
+      console.error('Error fetching sources:', error);
+      res.status(500).json({ message: 'Failed to fetch sources' });
     }
   }
 
   async fetchAnime(req: Request, res: Response) {
     try {
       const { id } = req.params;
-      const episode = await gogo.fetchAnimeInfo(id);
-      return res.status(200).json(episode);
+      let animeExisted = await prismaClient.anime.findUnique({
+        where: { id: id },
+        include: { episodes: true },
+      });
+      if (animeExisted) {
+        return res.status(200).json({ message: 'Anime', anime: animeExisted });
+      }
+      let anime: any = await gogo.fetchAnimeInfo(id);
+      if (!anime) {
+        return res
+          .status(404)
+          .json({ message: `Anime with id ${id} not found` });
+      }
+
+      await prismaClient.anime
+        .create({
+          data: {
+            id: anime.id,
+            title: anime.title,
+            url: anime.url,
+            genres: { set: anime.genres },
+            totalEpisodes: anime.totalEpisodes,
+            image: anime.image,
+            releaseDate: anime.releaseDate,
+            description: anime.description,
+            subOrDub: anime.subOrDub,
+            type: anime.type,
+            status: anime.status,
+            otherName: anime.otherName,
+          },
+        })
+        .catch((err) => console.log(err.message));
+
+      // Insert the episodes
+      await Promise.all(
+        anime.episodes.map(async (episode: Episode) => {
+          return prismaClient.episode.create({
+            data: {
+              id: episode.id,
+              number: episode.number,
+              url: episode.url,
+              animeId: anime.id,
+            },
+          });
+        })
+      ).catch((err: Error) => console.log(err.message));
+
+      return res.status(200).json(anime);
     } catch (error: any) {
       console.log(error.message);
-      return res.status(500).json({ message: "Failed to fetch episode" });
+      return res.status(500).json({ message: 'Failed to fetch episode' });
     }
   }
 
@@ -48,24 +101,27 @@ class AnimeController {
       return res.status(200).json(topAiring.results);
     } catch (error: any) {
       console.log(error.message);
-      return res.status(500).json({ message: "Failed to fetch Top Airing" });
+      return res.status(500).json({ message: 'Failed to fetch Top Airing' });
     }
   }
+
+  async fetchRecentFromDB(req: Request, res: Response) {}
 
   async fetchRecent(req: Request, res: Response) {
     try {
       let response: any = await gogo.fetchRecentEpisodes();
-      if (response.results.length === 0) {
-        response = await zoro
-          .fetchRecentlyAdded()
-          .catch((err) => console.log(err));
-      }
+      prismaClient.anime
+        .createMany({
+          data: response.results,
+        })
+        .catch((error) => console.log(error));
+
       return res.status(200).json(response.results);
     } catch (error) {
-      console.error("Error fetching recent episodes:", error);
+      console.error('Error fetching recent episodes:', error);
       return res
         .status(500)
-        .json({ message: "Failed to fetch recent episodes" });
+        .json({ message: 'Failed to fetch recent episodes' });
     }
   }
 
@@ -79,10 +135,10 @@ class AnimeController {
       }
       return res.status(200).json(response.results);
     } catch (error) {
-      console.error("Error fetching popular episodes:", error);
+      console.error('Error fetching popular episodes:', error);
       return res
         .status(500)
-        .json({ message: "Failed to fetch popular episodes" });
+        .json({ message: 'Failed to fetch popular episodes' });
     }
   }
 
@@ -98,8 +154,8 @@ class AnimeController {
       }
       return res.status(200).json(search.results);
     } catch (error) {
-      console.error("Failed to search anime:", error);
-      return res.status(500).json({ message: "Failed to search anime" });
+      console.error('Failed to search anime:', error);
+      return res.status(500).json({ message: 'Failed to search anime' });
     }
   }
 

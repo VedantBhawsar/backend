@@ -11,7 +11,7 @@ datasource db {
 }
 
 model Anime {
-  id            String    @id @map(name: "id")
+  id            String    @id @unique @map(name: "id")
   title         String
   url           String
   genres        String[]
@@ -27,34 +27,31 @@ model Anime {
 }
 
 model Episode {
-  id            String @id @map(name: "id")
-  episodeId     String @unique
-  episodeNumber Int    @unique
-  title         String
-  image         String
-  url           String
-  anime         Anime  @relation(fields: [animeId], references: [id])
-  animeId       String
+  id      String @id @map(name: "id")
+  number  Int
+  url     String
+  anime   Anime  @relation(fields: [animeId], references: [id])
+  animeId String
 }
 
-
 model News {
-  id           String     @id @map(name: "id")
-  title        String
-  uploadedAt   String
-  topics       String[]
-  thumbnail    String
+  id            String   @id @map(name: "id")
+  title         String
+  uploadedAt    String
+  topics        String[]
+  thumbnail     String
   thumbnailHash String
-  url          String
-  preview      Preview?
+  url           String
+  // preview       Preview? @relation(fields: [previewId], references: [id])
+  previewId     String?
+  createdAt     DateTime @default(now())
 }
 
 model Preview {
-  id      String  @id @map(name: "id")
-  intro   String?
-  full    String?
-  news    News    @relation(fields: [newsId], references: [id])
-  newsId  String @unique
+  id    String  @id @default(uuid())
+  intro String?
+  full  String?
+  // News  News[]
 }
 
 model StreamingSite {
