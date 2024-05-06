@@ -67,7 +67,7 @@ app.get('/', (req: Request, res: Response) => {
 setInterval(async () => {
   await axios.get('https://backend1-dv9d.onrender.com/');
   console.log('pinged');
-}, 60 * 1000);
+}, 20000);
 
 app.listen(port, () => {
   console.log(`Server is running at started!`);
