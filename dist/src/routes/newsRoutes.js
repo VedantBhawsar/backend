@@ -8,4 +8,5 @@ const express_1 = require("express");
 const news_1 = __importDefault(require("../controllers/news"));
 const router = (0, express_1.Router)();
 exports.NewsRoute = router;
-router.get("/fetch", news_1.default.fetchNewsFeeds);
+router.get('/fetch', news_1.default.fetchNewsFromDB);
+router.get('/fetch-feeds', news_1.default.fetchNewsFeeds);
