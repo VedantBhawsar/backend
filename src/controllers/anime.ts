@@ -46,7 +46,7 @@ class AnimeController {
         include: { episodes: true },
       });
       if (animeExisted) {
-        return res.status(200).json({ message: 'Anime', anime: animeExisted });
+        return res.status(200).json(animeExisted);
       }
       let anime: any = await gogo.fetchAnimeInfo(id);
       if (!anime) {
