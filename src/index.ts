@@ -12,7 +12,6 @@ import { PrismaClient } from '@prisma/client';
 import { NewsRoute } from './routes/newsRoutes';
 import { animeRoute } from './routes/animeRoutes';
 import { Workers } from './workers';
-import axios from 'axios';
 
 dotenv.config();
 
@@ -49,6 +48,6 @@ app.listen(3001, () => {
 
 // Workers for fetching data in 30 minutes of intervals
 setInterval(() => new Workers(), 3 * 60 * 10000);
-setInterval(async () => {
-  await fetch('https://backend1-dv9d.onrender.com/');
-}, 2000);
+// setInterval(async () => {
+//   await fetch('https://backend1-dv9d.onrender.com/');
+// }, 2000);

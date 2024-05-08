@@ -4,8 +4,6 @@ import { Request, Response } from 'express';
 import { prismaClient } from '..';
 
 const gogo = new ANIME.Gogoanime();
-const zoro = new ANIME.Zoro();
-const Anify = new ANIME.Anify();
 
 interface Episode {
   id: string;
@@ -16,22 +14,44 @@ interface Episode {
 class AnimeController {
   async fetchSources(req: Request, res: Response) {
     try {
-      let episode;
       const id = req.params.id;
-      episode = await gogo.fetchEpisodeSources(id).catch((error: any) => {
-        console.log(error.message);
+
+      // Check if the SourceEpisode already exists
+      let animeExisted = await prismaClient.sourceEpisode.findUnique({
+        where: { id: id },
+        include: { sources: true },
       });
 
-      if (episode) {
-        res
-          .status(200)
-          .json({ message: 'Sources fetched successfully', episode });
-        return;
+      if (animeExisted) {
+        return res.status(200).json({
+          message: 'Sources fetched successfully',
+          episode: animeExisted,
+        });
       }
-      res
-        .status(404)
-        .json({ message: 'error while fetching successfully', episode });
-      return;
+
+      // If SourceEpisode doesn't exist, create it first
+      const { sources, download, headers } = await gogo.fetchEpisodeSources(id);
+
+      const createdEpisode = await prismaClient.sourceEpisode.create({
+        data: {
+          id: id,
+          download: download ?? '',
+          headers: headers ?? '',
+          sources: {
+            create: sources.map((source: any) => ({
+              url: source.url,
+              isM3U8: source.isM3U8,
+              quality: source.quality,
+            })),
+          },
+        },
+        include: { sources: true }, // Include the created sources in the response
+      });
+
+      res.status(200).json({
+        message: 'Sources fetched successfully',
+        episode: createdEpisode,
+      });
     } catch (error) {
       console.error('Error fetching sources:', error);
       res.status(500).json({ message: 'Failed to fetch sources' });
@@ -97,8 +117,11 @@ class AnimeController {
 
   async fetchTopAiring(req: Request, res: Response) {
     try {
-      const topAiring = await gogo.fetchTopAiring();
-      return res.status(200).json(topAiring.results);
+      const { page } = req.query as { page: string };
+      const { results, currentPage } = await gogo.fetchTopAiring(
+        parseInt(page) ?? 0
+      );
+      return res.status(200).json({ currentPage, topAiring: results });
     } catch (error: any) {
       console.log(error.message);
       return res.status(500).json({ message: 'Failed to fetch Top Airing' });
@@ -109,14 +132,11 @@ class AnimeController {
 
   async fetchRecent(req: Request, res: Response) {
     try {
-      let response: any = await gogo.fetchRecentEpisodes();
-      prismaClient.anime
-        .createMany({
-          data: response.results,
-        })
-        .catch((error) => console.log(error));
-
-      return res.status(200).json(response.results);
+      const { page } = req.query as { page: string };
+      let { results, currentPage } = await gogo.fetchRecentEpisodes(
+        parseInt(page) ?? 0
+      );
+      return res.status(200).json({ currentPage, recentAnime: results });
     } catch (error) {
       console.error('Error fetching recent episodes:', error);
       return res
@@ -127,13 +147,11 @@ class AnimeController {
 
   async fetchPopular(req: Request, res: Response) {
     try {
-      let response: any = await gogo.fetchTopAiring();
-      if (response.results.length === 0) {
-        response = await zoro
-          .fetchRecentlyUpdated()
-          .catch((err) => console.log(err));
-      }
-      return res.status(200).json(response.results);
+      const { page } = req.query as { page: string };
+      let { results, currentPage } = await gogo.fetchTopAiring(
+        parseInt(page) ?? 0
+      );
+      return res.status(200).json({ currentPage, popularAnime: results });
     } catch (error) {
       console.error('Error fetching popular episodes:', error);
       return res
@@ -144,15 +162,9 @@ class AnimeController {
 
   async search(req: Request, res: Response) {
     try {
-      const { s } = req.query as { s: string };
-      let search: any = await gogo.search(s);
-      if (search.results.length === 0) {
-        search = await zoro.search(s).catch((err) => console.log(err));
-      }
-      if (search.results.length === 0) {
-        search = await Anify.search(s).catch((err) => console.log(err));
-      }
-      return res.status(200).json(search.results);
+      const { s, page } = req.query as { s: string; page: string };
+      let { results } = await gogo.search(s, parseInt(page) ?? 0);
+      return res.status(200).json(results);
     } catch (error) {
       console.error('Failed to search anime:', error);
       return res.status(500).json({ message: 'Failed to search anime' });

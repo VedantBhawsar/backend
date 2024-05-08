@@ -42,7 +42,6 @@ model News {
   thumbnail     String
   thumbnailHash String
   url           String
-  // preview       Preview? @relation(fields: [previewId], references: [id])
   previewId     String?
   createdAt     DateTime @default(now())
 }
@@ -51,11 +50,26 @@ model Preview {
   id    String  @id @default(uuid())
   intro String?
   full  String?
-  // News  News[]
 }
 
 model StreamingSite {
   id   String @id @map(name: "id")
   name String
   url  String
+}
+
+model SourceEpisode {
+  id       String   @id @unique @map(name: "id")
+  headers  Json
+  download String
+  sources   Source[]
+}
+
+model Source {
+  id        String        @id @default(uuid())
+  url       String
+  isM3U8    Boolean
+  quality   String
+  episode   SourceEpisode @relation(fields: [episodeId], references: [id])
+  episodeId String
 }
