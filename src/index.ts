@@ -11,8 +11,7 @@ import { PrismaClient } from '@prisma/client';
 // Routes Imports
 import { NewsRoute } from './routes/newsRoutes';
 import { animeRoute } from './routes/animeRoutes';
-import { Workers } from './workers';
-// import { Workers } from './workers';
+import Workers from './workers';
 
 dotenv.config();
 

@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const extensions_1 = require("@consumet/extensions");
-const __1 = require("..");
+const __1 = require("../..");
 const gogo = new extensions_1.ANIME.Gogoanime();
 class AnimeController {
     async fetchSources(req, res) {

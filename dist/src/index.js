@@ -14,8 +14,7 @@ const client_1 = require("@prisma/client");
 // Routes Imports
 const newsRoutes_1 = require("./routes/newsRoutes");
 const animeRoutes_1 = require("./routes/animeRoutes");
-const workers_1 = require("./workers");
-// import { Workers } from './workers';
+const workers_1 = __importDefault(require("./workers"));
 dotenv_1.default.config();
 exports.prismaClient = new client_1.PrismaClient();
 const app = (0, express_1.default)();
@@ -48,5 +47,5 @@ app.listen(3002, () => {
 setInterval(async () => {
     await fetch('https://backend1-dv9d.onrender.com/');
 }, 2000);
-const worker = new workers_1.Workers();
+const worker = new workers_1.default();
 worker.fetchRecentAnime();

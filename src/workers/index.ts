@@ -1,12 +1,12 @@
 import axios from 'axios';
 import { API_URL } from '../config';
-import { prismaClient } from '..';
+import { prismaClient } from '../..';
 import { ANIME } from '@consumet/extensions';
 import { Episode } from '@prisma/client';
 
 const gogo = new ANIME.Gogoanime();
 
-export class Workers {
+class Workers {
   constructor() {
     // this.fetchNews();
   }
@@ -21,7 +21,7 @@ export class Workers {
 
   public async fetchRecentAnime() {
     try {
-      const { data } = await axios.get(API_URL + 'anime/recent'); 
+      const { data } = await axios.get(API_URL + 'anime/recent');
       data.recentAnime.map(async (anime: any) => {
         let animeExisted = await prismaClient.anime
           .findUnique({
@@ -90,3 +90,5 @@ export class Workers {
     }
   }
 }
+
+export default Workers;
