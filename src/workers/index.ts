@@ -21,7 +21,7 @@ export class Workers {
 
   public async fetchRecentAnime() {
     try {
-      const { data } = await axios.get(API_URL + 'anime/recent');
+      const { data } = await axios.get(API_URL + 'anime/recent'); 
       data.recentAnime.map(async (anime: any) => {
         let animeExisted = await prismaClient.anime
           .findUnique({

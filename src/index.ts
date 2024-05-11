@@ -37,9 +37,9 @@ app.get('/', (req: Request, res: Response) => {
 app.listen(3001, () => {
   console.log(`Server is running at 3001!`);
 });
-// app.listen(3002, () => {
-//   console.log(`Server is running at 3002!`);
-// });
+app.listen(3002, () => {
+  console.log(`Server is running at 3002!`);
+});
 // app.listen(3003, () => {
 //   console.log(`Server is running at 3003!`);
 // });
