@@ -1,7 +1,7 @@
 import { ANIME } from '@consumet/extensions';
 import Zoro from '@consumet/extensions/dist/providers/anime/zoro';
 import { Request, Response } from 'express';
-import { prismaClient } from '../..';
+import { prismaClient } from '../index';
 
 const gogo = new ANIME.Gogoanime();
 

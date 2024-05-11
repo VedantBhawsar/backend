@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { NEWS, Topics } from '@consumet/extensions';
-import { prismaClient } from '../index';
+import { prismaClient } from '..';
 const ann = new NEWS.ANN();
 
 class NewsController {

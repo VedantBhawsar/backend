@@ -1,12 +1,12 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const extensions_1 = require("@consumet/extensions");
-const index_1 = require("../index");
+const __1 = require("..");
 const ann = new extensions_1.NEWS.ANN();
 class NewsController {
     async fetchNewsFromDB(req, res) {
         try {
-            const news = await index_1.prismaClient.news.findMany({
+            const news = await __1.prismaClient.news.findMany({
                 take: 10,
                 orderBy: {
                     createdAt: 'desc',
@@ -26,7 +26,7 @@ class NewsController {
                 const { preview, ...rest } = item;
                 return rest;
             });
-            index_1.prismaClient.news
+            __1.prismaClient.news
                 .createMany({
                 data: newsWithoutPreview,
                 skipDuplicates: true,

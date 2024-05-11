@@ -1,8 +1,8 @@
 import axios from 'axios';
 import { API_URL } from '../config';
-import { prismaClient } from '../..';
 import { ANIME } from '@consumet/extensions';
 import { Episode } from '@prisma/client';
+import { prismaClient } from '../index';
 
 const gogo = new ANIME.Gogoanime();
 

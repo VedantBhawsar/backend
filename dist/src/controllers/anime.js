@@ -1,14 +1,14 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const extensions_1 = require("@consumet/extensions");
-const __1 = require("../..");
+const index_1 = require("../index");
 const gogo = new extensions_1.ANIME.Gogoanime();
 class AnimeController {
     async fetchSources(req, res) {
         try {
             const id = req.params.id;
             // Check if the SourceEpisode already exists
-            let animeExisted = await __1.prismaClient.sourceEpisode.findUnique({
+            let animeExisted = await index_1.prismaClient.sourceEpisode.findUnique({
                 where: { id: id },
                 include: { sources: true },
             });
@@ -20,7 +20,7 @@ class AnimeController {
             }
             // If SourceEpisode doesn't exist, create it first
             const { sources, download, headers } = await gogo.fetchEpisodeSources(id);
-            const createdEpisode = await __1.prismaClient.sourceEpisode.create({
+            const createdEpisode = await index_1.prismaClient.sourceEpisode.create({
                 data: {
                     id: id,
                     download: download ?? '',
@@ -48,7 +48,7 @@ class AnimeController {
     async fetchAnime(req, res) {
         try {
             const { id } = req.params;
-            let animeExisted = await __1.prismaClient.anime.findUnique({
+            let animeExisted = await index_1.prismaClient.anime.findUnique({
                 where: { id: id },
                 include: { episodes: true },
             });
@@ -61,7 +61,7 @@ class AnimeController {
                     .status(404)
                     .json({ message: `Anime with id ${id} not found` });
             }
-            await __1.prismaClient.anime
+            await index_1.prismaClient.anime
                 .create({
                 data: {
                     id: anime.id,
@@ -81,7 +81,7 @@ class AnimeController {
                 .catch((err) => console.log(err.message));
             // Insert the episodes
             await Promise.all(anime.episodes.map(async (episode) => {
-                return __1.prismaClient.episode.create({
+                return index_1.prismaClient.episode.create({
                     data: {
                         id: episode.id,
                         number: episode.number,
