@@ -3,12 +3,14 @@ import { API_URL } from '../config';
 import { ANIME } from '@consumet/extensions';
 import { Episode } from '@prisma/client';
 import { prismaClient } from '../index';
+import { skip } from 'node:test';
 
 const gogo = new ANIME.Gogoanime();
 
 class Workers {
   constructor() {
-    this.fetchNews();
+    // this.fetchNews();
+    this.fetchRecentAnime()
   }
   public async fetchNews() {
     try {
@@ -21,17 +23,17 @@ class Workers {
 
   public async fetchRecentAnime() {
     try {
-      const { data } = await axios.get(API_URL + 'anime/recent');
-      data.recentAnime.map(async (anime: any) => {
+      const { data } = await axios.get("https://ninjanex-backend-production.up.railway.app/" + 'anime/recent');
+      data.recentAnime.map(async (anime1: any) => {
         let animeExisted = await prismaClient.anime
           .findUnique({
-            where: { id: anime.id },
+            where: { id: anime1.id },
             include: { episodes: true },
           })
           .catch((err) => console.log(err.message));
-        if (animeExisted) {
-          let anime: any = await gogo.fetchAnimeInfo(animeExisted.id);
-          prismaClient.anime.update({
+          let {data: anime}: any = await axios.get(`https://ninjanex-backend-production.up.railway.app/anime/fetch/${anime1.id}`).catch((error: Error)=> console.log(error.message))
+          if (animeExisted) {
+           const anime2 =  await prismaClient.anime.update({
             where: { id: anime.id },
             data: {
               title: anime.title,
@@ -46,9 +48,24 @@ class Workers {
               status: anime.status,
               otherName: anime.otherName,
             },
-          });
+          }).catch((err) => console.log(err.message));
+
+          await Promise.all(
+            anime.episodes.map(async (episode: Episode) => {
+              await  prismaClient.episode.create({
+                data: {
+                id: episode.id,
+                number: episode.number,
+                url: episode.url,
+                animeId: anime.id,
+              },
+            }).catch((error: Error)=> console.log(error.message));
+            return;
+            })
+          ).catch((err: Error) => console.log(err.message));
+
           return;
-        } else {
+        } else if (anime) {
           await prismaClient.anime
             .create({
               data: {
@@ -85,6 +102,7 @@ class Workers {
           return;
         }
       });
+      return;
     } catch (error: any) {
       console.log(error.message);
     }

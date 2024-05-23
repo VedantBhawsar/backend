@@ -27,7 +27,7 @@ model Anime {
 }
 
 model Episode {
-  id      String @id @map(name: "id")
+  id      String @id @unique  @map(name: "id")
   number  Int
   url     String
   anime   Anime  @relation(fields: [animeId], references: [id])

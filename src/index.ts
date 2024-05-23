@@ -48,12 +48,14 @@ app.listen(3001, () => {
 // });
 
 // Workers for fetching data in 30 minutes of intervals
-setInterval(() => new Workers(), 3 * 60 * 10000);
+setInterval(() => new Workers(), 3 *60 *10000);
 
 
-// setInterval(async () => {
-//   await fetch('https://backend1-dv9d.onrender.com/').catch((error:Error) => console.log(error.message))
-// }, 2000);
+
+
+setInterval(async () => {
+  await fetch('https://ninjanex-backend-production.up.railway.app/').catch((error:Error) => console.log(error.message))
+}, 2000);
 
 // const worker = new Workers();
 // worker.fetchRecentAnime();
