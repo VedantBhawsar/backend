@@ -14,6 +14,7 @@ const client_1 = require("@prisma/client");
 // Routes Imports
 const newsRoutes_1 = require("./routes/newsRoutes");
 const animeRoutes_1 = require("./routes/animeRoutes");
+const workers_1 = __importDefault(require("./workers"));
 // import Workers from './workers';
 dotenv_1.default.config();
 exports.prismaClient = new client_1.PrismaClient();
@@ -43,9 +44,9 @@ app.listen(3001, () => {
 //   console.log(`Server is running at 3004!`);
 // });
 // Workers for fetching data in 30 minutes of intervals
-// setInterval(() => new Workers(), 3 * 60 * 10000);
-setInterval(async () => {
-    await fetch('https://backend1-dv9d.onrender.com/');
-}, 2000);
+setInterval(() => new workers_1.default(), 3 * 60 * 10000);
+// setInterval(async () => {
+//   await fetch('https://backend1-dv9d.onrender.com/').catch((error:Error) => console.log(error.message))
+// }, 2000);
 // const worker = new Workers();
 // worker.fetchRecentAnime();

@@ -30,7 +30,7 @@ class NewsController {
           data: newsWithoutPreview,
           skipDuplicates: true,
         })
-        .catch((error) => console.log(error.message));
+        .catch((error:any) => console.log(error.message));
 
       return res.status(200).json({ news, length: newsWithoutPreview.length });
     } catch (error: any) {

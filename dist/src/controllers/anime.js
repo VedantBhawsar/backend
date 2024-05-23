@@ -78,7 +78,7 @@ class AnimeController {
                     otherName: anime.otherName,
                 },
             })
-                .catch((err) => console.log(err.message));
+                .catch((error) => console.log(error.message));
             // Insert the episodes
             await Promise.all(anime.episodes.map(async (episode) => {
                 return index_1.prismaClient.episode.create({

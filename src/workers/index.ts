@@ -8,7 +8,7 @@ const gogo = new ANIME.Gogoanime();
 
 class Workers {
   constructor() {
-    // this.fetchNews();
+    this.fetchNews();
   }
   public async fetchNews() {
     try {

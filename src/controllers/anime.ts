@@ -92,7 +92,7 @@ class AnimeController {
             otherName: anime.otherName,
           },
         })
-        .catch((err) => console.log(err.message));
+        .catch((error:any) => console.log(error.message));
 
       // Insert the episodes
       await Promise.all(
