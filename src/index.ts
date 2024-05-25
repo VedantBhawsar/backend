@@ -28,6 +28,7 @@ app.use(cors());
 app.use('/anime', animeRoute);
 app.use('/news', NewsRoute);
 
+
 //API's
 app.get('/', (req: Request, res: Response) => {
   res.status(200).json({ message: `Server Started` });
