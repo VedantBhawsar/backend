@@ -12,7 +12,6 @@ import { PrismaClient } from '@prisma/client';
 import { NewsRoute } from './routes/newsRoutes';
 import { animeRoute } from './routes/animeRoutes';
 import Workers from './workers';
-// import Workers from './workers';
 
 dotenv.config();
 
@@ -35,28 +34,8 @@ app.get('/', (req: Request, res: Response) => {
 });
 
 //Listens Statements
-app.listen(3001, () => {
-  console.log(`Server is running at 3001!`);
+app.listen(process.env.PORT ?? 3001, () => {
+  console.log(`Server is running at ${process.env.PORT ?? 3001}!`);
 });
-// app.listen(3002, () => {
-//   console.log(`Server is running at 3002!`);
-// });
-// app.listen(3003, () => {
-//   console.log(`Server is running at 3003!`);
-// });
-// app.listen(3004, () => {
-//   console.log(`Server is running at 3004!`);
-// });
 
-// Workers for fetching data in 30 minutes of intervals
 setInterval(() => new Workers(), 3 *60 *10000);
-
-
-
-
-setInterval(async () => {
-  await fetch('https://ninjanex-backend-production.up.railway.app/').catch((error:Error) => console.log(error.message))
-}, 2000);
-
-// const worker = new Workers();
-// worker.fetchRecentAnime();

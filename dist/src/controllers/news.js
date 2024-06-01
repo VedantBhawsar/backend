@@ -12,6 +12,7 @@ class NewsController {
                     createdAt: 'desc',
                 },
             });
+            console.log('hello');
             return res.status(200).json({ news, length: news.length });
         }
         catch (error) {
